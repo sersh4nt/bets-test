@@ -7,7 +7,7 @@ from .models import TimerEvent
 from .timer import timer
 
 @api_view(["POST"])
-@permission_classes(AllowAny)
+@permission_classes([AllowAny])
 def post_event(request: Request) -> Response:
     if timer.is_running():
         value = timer.stop()
@@ -15,4 +15,5 @@ def post_event(request: Request) -> Response:
     else:
         timer.start()
         TimerEvent.objects.create(type=TimerEvent.EventType.START)
-    return Response(status=201)
+
+    return Response({"is_running": timer.is_running()}, status=201)
