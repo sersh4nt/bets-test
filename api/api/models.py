@@ -7,7 +7,7 @@ class TimerEvent(models.Model):
         STOP = 1
 
     ts = models.DateTimeField(auto_now_add=True)
-    timer_value = models.DateTimeField()
+    timer_value = models.FloatField(default=0.0)
     type = models.IntegerField(choices=EventType.choices)
 
     class Meta:
