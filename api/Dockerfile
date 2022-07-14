@@ -31,12 +31,6 @@ COPY --from=builder /usr/app/src/wheels /wheels
 COPY --from=builder /usr/app/src/requirements.txt .
 RUN pip install --no-cache /wheels/*
 
-COPY ./entrypoint.sh .
-RUN sed -i 's/\r$//g'  $APP_HOME/entrypoint.sh
-RUN chmod +x  $APP_HOME/entrypoint.sh
-
 COPY . $APP_HOME
 
 RUN mkdir -p static && python manage.py collectstatic --noinput
-
-ENTRYPOINT ["/home/app/web/entrypoint.sh"]

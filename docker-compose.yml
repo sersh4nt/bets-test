@@ -43,7 +43,7 @@ services:
       - static_volume:/var/www/static
       - react_build:/var/www/build
     ports:
-      - 8050:80
+      - 8000:80
     depends_on:
       - frontend
       - daphne
