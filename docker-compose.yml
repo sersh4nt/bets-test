@@ -30,7 +30,6 @@ services:
     build: 
       context: ./frontend
       dockerfile: Dockerfile
-    image: sersh4nt/mt-support-frontend:latest
     volumes:
       - ./frontend:/usr/app/src
       - react_build:/usr/app/src/build
