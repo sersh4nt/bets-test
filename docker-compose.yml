@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  daphne:
+    build: ./api
+    command: daphne -b 0.0.0.0 -p 9000 core.asgi:application
+    volumes:
+      - ./api:/home/app/web
+      - static_volume:/home/app/web/static
+    expose:
+      - 9000
+    env_file:
+      - ./api/.env
+    depends_on:
+      - redis
+      - db
+
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    env_file:
+      - ./api/.env
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: sersh4nt/mt-support-frontend:latest
+    volumes:
+      - ./frontend:/usr/app/src
+      - react_build:/usr/app/src/build
+
+  nginx:
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile
+    volumes:
+      - static_volume:/var/www/static
+      - react_build:/var/www/build
+    ports:
+      - 8050:80
+    depends_on:
+      - frontend
+      - daphne
+
+volumes:
+  pg_data:
+  static_volume:
+  react_build:
