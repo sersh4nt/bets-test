@@ -1,5 +1,6 @@
 import asyncio
 
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from .models import TimerEvent
@@ -9,14 +10,14 @@ from .timer import timer
 
 class TimerConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
+        await self.channel_layer.group_add("timer", self.channel_name)
+        await self.accept()
+
         try:
             self.connections += 1
         except AttributeError:
             self.connections = 1
-            self.update_task = asyncio.ensure_future(self.update_timer())
-
-        await self.channel_layer.group_add("timer", self.channel_name)
-        await self.accept()
+            self.update_task = asyncio.create_task(self.update_timer())
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard("timer", self.channel_name)
@@ -28,17 +29,21 @@ class TimerConsumer(AsyncJsonWebsocketConsumer):
         self.update_task.cancel()
         self.update_task = None
 
+    @database_sync_to_async
+    def get_events(self):
+        events = TimerEvent.objects.order_by("-ts")
+        data = TimerEventSerializer(events, many=True).data
+        return data
+
     async def update_timer(self):
         while True:
-            events = TimerEvent.objects.all()
-            events_data = TimerEventSerializer(events).data
-
+            events = await self.get_events()
             await self.channel_layer.group_send(
                 "timer",
                 {
                     "type": "timer_data",
                     "data": {
-                        "events": events_data,
+                        "events": events,
                         "value": timer.get_value(),
                         "is_running": timer.is_running(),
                     },

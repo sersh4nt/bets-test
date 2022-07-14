@@ -1,4 +1,3 @@
-from threading import Timer
 from rest_framework import serializers
 from .models import TimerEvent
 
