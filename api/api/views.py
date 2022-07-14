@@ -4,10 +4,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from .models import TimerEvent
-from .timer import Timer
-
-timer = Timer()
-
+from .timer import timer
 
 @api_view(["POST"])
 @permission_classes(AllowAny)

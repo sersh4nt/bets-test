@@ -20,3 +20,11 @@ class Timer:
 
     def is_running(self) -> bool:
         return self._started
+
+    def get_value(self) -> float:
+        if not self._started:
+            return 0.0
+        return (datetime.utcnow() - self._time_started).total_seconds()
+
+
+timer = Timer()

@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "api",
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -87,3 +88,12 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "static"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
